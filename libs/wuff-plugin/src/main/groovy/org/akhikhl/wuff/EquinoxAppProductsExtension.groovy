@@ -36,6 +36,7 @@ class EquinoxAppProductsExtension {
   File windowsBmp_32_32b
   File windowsBmp_48_8b
   File windowsBmp_48_32b
+  File windowsBmp_256_32b
   File windowsIco
 
   File macosxIcns

@@ -493,6 +493,7 @@ class EquinoxProductConfigurer {
                 project.products.windowsBmp_32_32b,
                 project.products.windowsBmp_48_8b,
                 project.products.windowsBmp_48_32b,
+                project.products.windowsBmp_256_32b,
         ].findAll { it != null }.collect { it.absolutePath }
 
         if(!icons.isEmpty()) {
