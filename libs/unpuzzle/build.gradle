@@ -16,9 +16,6 @@ if(!tasks.findByName('uploadArchives'))
   task 'uploadArchives'
 
 afterEvaluate {
-  project.tasks.build {
-    dependsOn 'downloadEclipse'
-  }
   project.tasks.install {
     dependsOn 'installEclipse'
   }
