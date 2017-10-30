@@ -7,10 +7,9 @@
  */
 package org.akhikhl.wuff
 
-import groovy.xml.MarkupBuilder
+import org.akhikhl.unpuzzle.PlatformConfig
 import org.gradle.api.Project
 import org.gradle.api.tasks.JavaExec
-import org.akhikhl.unpuzzle.PlatformConfig
 
 /**
  *
@@ -71,6 +70,8 @@ class EquinoxAppConfigurer extends OsgiBundleConfigurer {
         // key is plugin name, value is complete launch entry for configuration
         def bundleLaunchList = [:]
 
+        Map<String, Integer> bundleStartLevelMap = project.run.bundleStartLevelMap
+
         def addBundle = { File file ->
           String pluginName = PluginUtils.getPluginName(file.name)
           if(bundleLaunchList.containsKey(pluginName))
@@ -80,6 +81,8 @@ class EquinoxAppConfigurer extends OsgiBundleConfigurer {
             launchOption = '@2:start'
           else if(pluginName == 'org.eclipse.core.runtime' || pluginName == 'jersey-core'|| project.run.autostartedBundles.contains(pluginName))
             launchOption = '@start'
+          else if(bundleStartLevelMap.containsKey(pluginName))
+            launchOption = '@' + bundleStartLevelMap.get(pluginName) + ':start'
           if(pluginName != PluginUtils.osgiFrameworkPluginName && !pluginName.startsWith(PluginUtils.equinoxLauncherPluginName))
             bundleLaunchList[pluginName] = "reference\\:file\\:${file.toURI().path}${launchOption}"
         }

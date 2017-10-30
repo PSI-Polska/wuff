@@ -234,6 +234,8 @@ class EquinoxProductConfigurer {
     // key is plugin name, value is complete launch entry for configuration
     def bundleLaunchList = [ : ]
 
+    Map<String, Integer> bundleStartLevelMap = project.products.bundleStartLevelMap
+
     def addBundle = { File file ->
       String pluginName = PluginUtils.getPluginName(file.name)
       if(bundleLaunchList.containsKey(pluginName))
@@ -243,6 +245,8 @@ class EquinoxProductConfigurer {
         launchOption = '@2:start'
       else if(pluginName == 'org.eclipse.core.runtime' || pluginName == 'jersey-core' || project.products.autostartedBundles.contains(pluginName))
         launchOption = '@start'
+      else if(bundleStartLevelMap.containsKey(pluginName))
+        launchOption = '@' + bundleStartLevelMap.get(pluginName) + ':start'
       if(pluginName != PluginUtils.osgiFrameworkPluginName && !pluginName.startsWith(PluginUtils.equinoxLauncherPluginName))
         bundleLaunchList[pluginName] = "reference\\:file\\:${file.name}${launchOption}"
 

@@ -28,6 +28,8 @@ class EquinoxAppProductsExtension {
 
   List<String> autostartedBundles = []
 
+  Map<String, Integer> bundleStartLevelMap = [:]
+
   boolean nativeLauncher = true;
 
   File windowsBmp_16_8b
@@ -61,6 +63,10 @@ class EquinoxAppProductsExtension {
 
   void jvmArg(String newValue) {
       jvmArgs.add newValue
+  }
+
+  void putBundleStartLevelEntry(String newBundle, Integer newStartLevel) {
+    bundleStartLevelMap.put newBundle, newStartLevel
   }
 
   void product(String productName) {

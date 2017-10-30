@@ -17,6 +17,7 @@ class RunExtension {
   def jvmArgs = []
   String language
   def autostartedBundles = []
+  Map<String, Integer> bundleStartLevelMap = [:]
 
   def arg(String newValue) {
     args.add newValue
@@ -44,5 +45,13 @@ class RunExtension {
 
   void autostartedBundle(String[] newBundles) {
     autostartedBundles.addAll newBundles
+  }
+
+  void putBundleStartLevelEntry(String newBundle, Integer newStartLevel) {
+    bundleStartLevelMap.put newBundle, newStartLevel
+  }
+
+  void putAllBundleStartLevelEntries(Map<String, Integer> newBundleStartLevelMap) {
+    bundleStartLevelMap.putAll newBundleStartLevelMap
   }
 }
