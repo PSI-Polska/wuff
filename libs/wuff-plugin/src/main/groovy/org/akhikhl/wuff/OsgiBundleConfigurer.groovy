@@ -341,7 +341,7 @@ class OsgiBundleConfigurer extends JavaConfigurer {
     super.createConfigurations()
     if(!project.configurations.findByName('publicLib')) {
       Configuration configuration = project.configurations.create('publicLib')
-      project.sourceSets.each { it.compileClasspath += [configuration] }
+      project.sourceSets.each { it.compileClasspath += configuration }
 
       if (project.plugins.hasPlugin('idea'))
         project.idea.module.scopes.COMPILE.plus += [configuration]
@@ -351,7 +351,7 @@ class OsgiBundleConfigurer extends JavaConfigurer {
     }
     if(!project.configurations.findByName('privateLib')) {
       Configuration configuration = project.configurations.create('privateLib')
-      project.sourceSets.each { it.compileClasspath += [configuration] }
+      project.sourceSets.each { it.compileClasspath += configuration }
 
       if (project.plugins.hasPlugin('idea'))
         project.idea.module.scopes.COMPILE.plus += [configuration]
