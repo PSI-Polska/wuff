@@ -7,11 +7,10 @@
  */
 package org.akhikhl.wuff
 
-import java.util.jar.Manifest
-import org.apache.commons.codec.digest.DigestUtils
-import org.gradle.api.*
+import org.gradle.api.Project
 import org.gradle.api.file.FileTree
-import org.gradle.api.plugins.*
+
+import java.util.jar.Manifest
 
 /**
  *
@@ -98,12 +97,6 @@ class ManifestUtils {
       packages = ManifestUtils.parsePackages(mergeValue).findAll { !it.key.startsWith('!') }
     else
       packages = [:]
-    /*
-     * Here we fix the problem with eclipse 4.X bundles:
-     * if 'org.eclipse.xxx' are imported via 'Import-Package',
-     * the application throws ClassNotFoundException.
-     */
-    packages = packages.findAll { !it.key.startsWith('org.eclipse') }
     return ManifestUtils.packagesToString(packages)
   }
 
