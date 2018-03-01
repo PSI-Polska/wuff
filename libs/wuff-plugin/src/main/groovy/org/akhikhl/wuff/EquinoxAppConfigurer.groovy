@@ -74,7 +74,7 @@ class EquinoxAppConfigurer extends OsgiBundleConfigurer {
 
         def addBundle = { File file ->
           String pluginName = PluginUtils.getPluginName(file.name)
-          if(bundleLaunchList.containsKey(pluginName))
+          if (bundleLaunchList.containsKey(pluginName) || project.wuffBundleConfigs.containsBundle(pluginName))
             return
           String launchOption = ''
           if(pluginName == 'org.eclipse.equinox.ds' || pluginName == 'org.eclipse.equinox.common')

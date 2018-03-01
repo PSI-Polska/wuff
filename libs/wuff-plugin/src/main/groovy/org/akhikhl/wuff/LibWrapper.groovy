@@ -7,12 +7,12 @@
  */
 package org.akhikhl.wuff
 
-import org.gradle.api.Project
-
 import org.apache.commons.io.FilenameUtils
-
+import org.gradle.api.Project
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.util.jar.Manifest
 
 /**
  *
@@ -25,7 +25,7 @@ class LibWrapper {
   private final Project project
   private final File lib
   private final WrappedLibsConfig wrappedLibsConfig
-  private libManifest
+  private Manifest libManifest
   private final String baseLibName
   private String bundleName
   private String bundleVersion
@@ -37,7 +37,7 @@ class LibWrapper {
     this.lib = lib
     this.wrappedLibsConfig = wrappedLibsConfig
     libManifest = ManifestUtils.getManifest(project, lib)
-    if(!ManifestUtils.isBundle(libManifest)) {
+    if (shouldWrapLib()) {
       baseLibName = FilenameUtils.getBaseName(lib.name)
       getBundleVersionAndName()
       bundleFileName = "${bundleName}-bundle-${bundleVersion}.jar"
@@ -66,6 +66,7 @@ class LibWrapper {
       packages = packages.findAll { key, value -> !wrappedLibConfig.excludedImports.find { key =~ it } }
       requireBundle = ManifestUtils.mergeRequireBundle(requireBundle, wrappedLibConfig.requiredBundles.join(','))
     }
+    packages = project.wuffBundleConfigs.filterBundleImports(lib, packages)
     m.attributes.remove 'Import-Package'
     if(packages)
       m.attributes 'Import-Package': ManifestUtils.packagesToString(packages)
@@ -78,6 +79,25 @@ class LibWrapper {
     File manifestFile = new File(project.buildDir, "tmp/manifests/${bundleFileName}-MANIFEST.MF")
     manifestFile.parentFile.mkdirs()
     manifestFile.withWriter { m.writeTo it }
+    return manifestFile
+  }
+
+  private File generateManifestFileFromJavaManifest(Manifest manifest) {
+    manifest.mainAttributes.putValue('Bundle-Name', bundleName)
+    manifest.mainAttributes.putValue('Bundle-SymbolicName', bundleName)
+    manifest.mainAttributes.putValue('Bundle-ClassPath', lib.name)
+    manifest.mainAttributes.putValue('Wrapped-Library', lib.name)
+
+    Map packages = ManifestUtils.parsePackages(manifest.mainAttributes.getValue('Import-Package'))
+    packages = project.wuffBundleConfigs.filterBundleImports(lib, packages)
+    manifest.mainAttributes.remove('Import-Package')
+    if (packages) {
+      manifest.mainAttributes.putValue('Import-Package', ManifestUtils.packagesToString(packages))
+    }
+
+    File manifestFile = new File(project.buildDir, "tmp/manifests/${bundleFileName}-MANIFEST.MF")
+    manifestFile.parentFile.mkdirs()
+    manifestFile.withOutputStream { manifest.write it }
     return manifestFile
   }
 
@@ -125,12 +145,16 @@ class LibWrapper {
     bundleVersion = bundleVersion ?: '1.0'
   }
 
+  private boolean shouldWrapLib() {
+    return !ManifestUtils.isBundle(libManifest) || project.wuffBundleConfigs.containsBundle(lib)
+  }
+
   void wrap() {
-    if(ManifestUtils.isBundle(libManifest))
+    if (!shouldWrapLib())
       return
     File wrappedLibsDir = PluginUtils.getWrappedLibsDir(project)
     wrappedLibsDir.mkdirs()
-    File manifestFile = generateManifestFile()
+    File manifestFile = ManifestUtils.isBundle(libManifest) ? generateManifestFileFromJavaManifest(libManifest) : generateManifestFile()
     project.ant.jar(destFile: new File(wrappedLibsDir, bundleFileName), manifest: manifestFile) {
       fileset(file: lib)
     }

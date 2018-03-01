@@ -7,10 +7,8 @@
  */
 package org.akhikhl.wuff
 
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.RelativePath
-import org.gradle.api.tasks.Copy
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -119,6 +117,12 @@ class Configurer {
 
     if(!project.extensions.findByName('wuff'))
       project.extensions.create('wuff', Config)
+
+    if (!project.rootProject.extensions.findByName('wuffBundleConfigs')) {
+      project.extensions.create('wuffBundleConfigs', BundleConfigsExtension)
+    } else {
+      project.extensions.add('wuffBundleConfigs', project.rootProject.wuffBundleConfigs)
+    }
 
     def self = this
 

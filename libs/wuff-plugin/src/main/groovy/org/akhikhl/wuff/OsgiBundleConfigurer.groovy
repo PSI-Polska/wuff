@@ -205,6 +205,7 @@ class OsgiBundleConfigurer extends JavaConfigurer {
                   newValue = newValue + ',' +project.wuff.eclipseImports
                 }
               }
+              newValue = project.wuffBundleConfigs.filterBundleImports(project.name, newValue)
             } else if(details.key.equalsIgnoreCase('Bundle-ClassPath')) {
               newValue = ManifestUtils.mergeClassPath(details.baseValue, mergeValue)
             } else {
