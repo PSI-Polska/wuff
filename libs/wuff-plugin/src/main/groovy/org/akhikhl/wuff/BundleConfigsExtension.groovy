@@ -7,6 +7,10 @@ class BundleConfigsExtension {
         bundleConfigs.add(bundleConfig)
     }
 
+    void addBundleConfig(String bundleName, List<String> importsToExclude) {
+        addBundleConfig(new BundleConfig.Builder(bundleName).importsToExclude(importsToExclude).build())
+    }
+
     boolean containsBundle(String bundleName) {
         return bundleConfigs.any { it.bundleName == bundleName }
     }
